@@ -1,76 +1,66 @@
 # JNP Mod Community API Privacy Notice
 
-> **Draft — not ready for use as the release privacy notice.** Before enabling public tester releases, replace every `[REQUIRED: ...]` item, verify the operational statements below against the live service, and approve this notice. Do not configure `PUBLIC_API_PRIVACY_NOTICE_URL` to this draft as though it were final.
+**Effective date:** 18 October 2026
 
-**Draft last updated:** 18 October 2026
+This notice describes the JNP Mod community API used by the JNP Mod client for community gameplay records and leaderboards. It is intended to explain the current implementation, including the fact that eligible uploads are automatic and there is no per-run opt-in prompt.
 
-## 1. Who operates the service and how to contact them
+## 1. Operator and privacy contact
 
-The JNP Mod community API is operated by **[REQUIRED: the operator's name or legal entity]** ("the operator").
+The community API is operated by the independent maintainer of the JNP Mod and Monster Maze projects, using the GitHub account [@joshbet9](https://github.com/joshbet9). No separate company or legal entity is identified as the operator in the project documentation.
 
-For privacy questions, access/correction requests, or requests to remove a community record, contact **[REQUIRED: a monitored email address or private contact method]**.
+For a privacy, access, correction or deletion request, use the [JNP Mod release repository](https://github.com/joshbet9/jnp-mod-releases) to contact the maintainer. Start with an issue that asks for a private follow-up channel; **do not include your UUID, private contact details, or the record you want removed in a public issue**. The maintainer will need enough information to identify the relevant entry before making changes.
 
-Please do not post Minecraft UUIDs, private contact details, or other personal information in public GitHub issues. A contact method for privacy requests must be available before this notice is used for release.
+## 2. Information collected
 
-## 2. Information the mod may submit
+When a community-upload feature is enabled in a build and an eligible run occurs, the mod automatically submits a record to the public JNP Mod community API. Uploads do not currently have a per-run consent prompt or an in-mod disable toggle. Do not use community-upload features if you do not agree to this processing.
 
-Community-upload features submit eligible gameplay records to the JNP Mod community API. Uploads are automatic for eligible records; the current tester build does not provide a per-run consent prompt or an in-mod switch to disable community uploading. Do not use community-upload features if you do not agree to this processing.
-
-Depending on the game mode and fields collected by the client, a record may contain:
+Depending on the module, Minecraft version and information available to the client, a submitted record may include:
 
 - Minecraft UUID and in-game name (IGN).
-- Game and server context, such as MIN/MPS or an HH/HHC/HHI variant, and server/node details.
-- Minecraft platform or game mode, detected kit and whether that detection was confirmed, map pattern, and stage reached.
-- Run start/submission timestamps, duration, completion status, objective/split names, and split timings.
-- Where collected for a group run, party members' UUIDs/IGNs and a group signature.
+- Game context, such as MIN/MPS, and the applicable HH, HHC or HHI variant.
+- Server type or node information, Minecraft platform and game mode.
+- Detected kit and whether the kit detection was confirmed, Monster Maze stage and map pattern.
+- Run start and submission timestamps, elapsed time, completion state, objective/split names and split timings.
+- For group-run records where collected, party-member UUIDs/IGNs and a group signature.
 
-The exact fields differ by module and version and may change as the project evolves. Community records are client-reported and are not independently verified by the Minecraft server; they can be incomplete or inaccurate.
+Not every record contains every field. Results are client-reported and may be incomplete or inaccurate; they are not independently verified by the Minecraft server.
 
-## 3. Why the information is processed
+The Mineplex Stats feature separately makes read-only HTTPS requests to Mineplex for its stats pages and stores its cache in the local Minecraft profile. That page cache is not uploaded to the JNP community API by the Mineplex Stats feature.
 
-The operator uses submitted records to operate community leaderboards, player/game history and statistics, associate records with the relevant player and run, suppress duplicate submissions, and maintain the community API.
+## 3. Why information is used
 
-## 4. Public display and service storage
+Submitted information is processed to store and display community leaderboards, player/game profiles and game history, associate submissions with players and runs, reduce duplicate submissions, and operate and troubleshoot the API.
 
-Information used by the community leaderboard and history endpoints may be returned to other users of the public API and displayed in JNP Mod's community features. In particular, UUIDs, in-game names, and gameplay results should be treated as information that may be publicly associated with a leaderboard entry.
+## 4. Public display and storage
 
-The API stores submitted records in its community data store. **[REQUIRED: verify and describe who can administer/access this store and any hosting or service providers that process its data.]**
+Community submissions are stored in an SQLite database on the project's Oracle-hosted VM. The configured public API is `https://monstermaze.duckdns.org`. Public API endpoints return community leaderboard, player and history data, and the client displays that data in community views. Treat an uploaded UUID, IGN and associated result as information that may be publicly linked together.
 
-## 5. Local storage on your computer
+The active database is deployed at `/home/ubuntu/monstermaze/data/leaderboard.db` on the VM. Server administration access is required to access the underlying database directly. The hosting provider also operates the underlying VM infrastructure.
 
-The mod also stores local gameplay history and pending upload/retry information in configuration files in the Minecraft profile. A failed upload may remain in the local queue for retry. Removing a local file affects that local copy; it does not, by itself, remove a record that has already been accepted by the community API.
+## 5. Local copies
 
-## 6. Data retention
+The client stores local run history and pending upload/retry state in files in the Minecraft profile's configuration directory. A failed or unacknowledged upload may remain in the local queue for retry. Users can remove local files to remove the local copy, but deleting a local file does not delete a record already accepted by the community API.
 
-**This section must be completed before public release.**
+## 6. Retention
 
-- Active community database records are retained for: **[REQUIRED: state the actual retention rule or time period; do not leave this blank].**
-- Database backups are retained for: **[REQUIRED: state the actual backup retention period and deletion process].**
-- Relevant application/access logs, if they contain or can be linked to submitted data, are retained for: **[REQUIRED: state the actual period, or explain that such logs are not kept].**
+The current API code does **not** apply an automatic age-based expiry to community gameplay records. Records in the active database therefore remain until the maintainer deletes them or a future administrative migration changes that data. There is no fixed automatic expiry period for community records.
 
-Do not assume that removing a record from a leaderboard automatically removes it from backups or logs. This notice must describe the system's actual behaviour.
+The Oracle release deployment creates SQLite database backups before releases and keeps the **10 most recent deployment backups** in the server's backup directory, rotating out older backups as further releases are deployed. This is a count-based rotation rather than a fixed number of days: the age of a backup depends on release frequency. An entry removed from the active database may remain in an existing backup until that backup is rotated out or separately removed.
 
-## 7. Access, correction and deletion requests
+The application does not define its own fixed retention period for service logs. Operational output from the API process is handled by the VM's systemd journal and follows that host's journal configuration; the project's deployment workflow does not specify a dedicated log-retention duration.
 
-To request access to, correction of, or deletion of a submitted record, contact **[REQUIRED: same monitored privacy contact as section 1]** and provide enough information for the operator to identify the relevant record. Do not send passwords, access tokens, or unrelated sensitive information.
+## 7. Access, correction and deletion
 
-The operator will **[REQUIRED: describe the actual verification and handling process, response timeframe, and how deletion propagates to backups/logs where applicable]**. Requests may need to be limited where the operator cannot safely identify a record or where retention is required for a stated, lawful reason. State the actual policy here rather than promising a process that has not been implemented.
+The current public API does not provide a self-service endpoint for a player to delete their community records. Requests must be handled by the maintainer, who can inspect and, where the requested record can be identified and the request can be processed, remove it from the active community database. There is no guaranteed response-time SLA.
+
+A removal from the active database does not automatically recall copies that other people may already have viewed or saved, and does not by itself purge the retained deployment backups or service logs. Backup rotation and server log retention are described above. The maintainer may need to remove a record from retained backups separately when appropriate.
+
+To make a request, start through the privacy contact route in section 1 without publishing personal identifiers. Do not send passwords, API tokens, or unrelated sensitive information.
 
 ## 8. Security
 
-The client is designed to communicate with the configured public API over HTTPS. No online service or transmission method can be guaranteed completely secure. Keep your Minecraft profile files private and do not share local history/queue files unnecessarily.
+The client is designed to send community data to the configured API over HTTPS. Access to the underlying database requires server administration access. No online service or transmission method can be guaranteed completely secure; keep local profile files private and avoid sharing logs or local history files unnecessarily.
 
 ## 9. Changes to this notice
 
-If data fields, purposes, public display, retention, deletion arrangements, or contact details change materially, this notice should be updated and the release's linked copy checked before further releases.
-
----
-
-## Publication checklist (remove this section once complete)
-
-- [ ] Replace all `[REQUIRED: ...]` text with accurate, approved details.
-- [ ] Confirm the deployed API's current data fields and public response contents.
-- [ ] Confirm actual database, backup and log retention behaviour.
-- [ ] Provide and test a monitored private contact route for privacy/deletion requests.
-- [ ] Review the notice against the operating arrangements and applicable privacy obligations.
-- [ ] Remove this draft banner and checklist only after the notice is complete and approved.
+This notice should be updated if the submitted data, use purposes, public visibility, storage arrangement, retention/deletion practices or privacy contact process materially changes. The release package should link to the current notice.
