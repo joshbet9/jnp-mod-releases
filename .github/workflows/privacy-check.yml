@@ -1,0 +1,47 @@
+name: Check public distribution repository privacy
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan-public-files:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Scan tracked working-tree files for identifying or secret material
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import re
+          import sys
+          from pathlib import Path
+
+          root = Path('.')
+          patterns = (
+              ('email-like address', re.compile(rb'(?i)\b[A-Z0-9._%+-]{1,64}@[A-Z0-9.-]+\.[A-Z]{2,63}\b')),
+              ('Windows user-profile path', re.compile(rb'(?i)\b[A-Z]:\\Users\\[^\\/\s"\']+')),
+              ('Unix user-home path', re.compile(rb'(?i)/(?:home|Users)/[^/\s"\']+')),
+              ('private-key marker', re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----')),
+              ('GitHub access-token pattern', re.compile(rb'(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b')),
+              ('AWS access-key pattern', re.compile(rb'\bAKIA[0-9A-Z]{16}\b')),
+          )
+          failures = []
+          for path in root.rglob('*'):
+              if not path.is_file() or '.git' in path.parts:
+                  continue
+              data = path.read_bytes()
+              for label, pattern in patterns:
+                  if pattern.search(data):
+                      failures.append(f'{path}: detected {label}; value withheld')
+          if failures:
+              print('Public repository privacy scan failed:')
+              print('\n'.join(f' - {item}' for item in failures))
+              sys.exit(1)
+          print('Public repository privacy scan passed.')
+          PY
