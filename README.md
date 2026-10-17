@@ -16,7 +16,7 @@ The combined package contains five target builds when the tester-release workflo
 
 Community-upload features automatically submit eligible run records to the configured JNP Mod community API. Submitted records can include Minecraft UUID and in-game name (IGN), game/server context, detected kit, stage, run duration, timestamps, completion information, objective splits, and some group-run metadata such as party member UUIDs/IGNs. Uploads do not currently have a per-run opt-in prompt or an in-mod disable toggle. Local history and pending uploads are also kept in the Minecraft profile configuration.
 
-**Read the API privacy notice linked in the installation guide included with the release before using community-upload features.** It should identify the API operator, describe retention/deletion arrangements, and provide a privacy-request contact. Public tester publication is blocked by the source build workflow until that notice is configured.
+**Read the [JNP Mod Community API Privacy Notice](PRIVACY.md) before using community-upload features.** The same notice URL is supplied to the installation guide included with the release. It describes the submitted gameplay data, public display, local copies, the current no-automatic-expiry retention behaviour, database-backup rotation, log-retention boundary and how to request access, correction or deletion. Public tester publication remains gated on the source workflow's configured HTTPS notice URL and scoped release token.
 
 Community records are client-reported and not server-verified. Do not treat them as authoritative evidence for rewards, moderation, or anti-cheat decisions. Do not post UUIDs, logs, personal contact details, or other sensitive information in public issues.
 
